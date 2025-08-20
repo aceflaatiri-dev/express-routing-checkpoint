@@ -1,38 +1,43 @@
+// Import des modules
 const express = require('express');
 const path = require('path');
 
 const app = express();
 const PORT = 3000;
 
-// Middleware pour servir les fichiers CSS
-app.use(express.static(path.join(__dirname, 'public')));
+// Middleware cool pour vérifier si on est dans les heures d'ouverture
 
-// Middleware pour vérifier les horaires (Lun-Ven, 9h-17h)
 app.use((req, res, next) => {
   const now = new Date();
-  const day = now.getDay(); // 0 = Dimanche, 1 = Lundi, ..., 6 = Samedi
-  const hour = now.getHours();
+  const day = now.getDay();   // 0 = dimanche, 1 = lundi, ..., 6 = samedi
+  const hour = now.getHours(); // heure actuelle
 
+  // Si c'est weekend ou hors 9h-17h, on ferme la boutique
   if (day === 0 || day === 6 || hour < 9 || hour >= 17) {
-    return res.send('<h1>Notre site est disponible uniquement du lundi au vendredi, de 9h à 17h.</h1>');
+    return res.send('<h1>Désolé, on est ouvert seulement du lundi au vendredi de 9h à 17h 😅</h1>');
   }
+
+  // Sinon, go next middleware / route
   next();
 });
 
-// Routes
+// Routes principales
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'home.html'));
+  // Page d'accueil
+  res.sendFile(path.resolve('views', 'home.html'));
 });
 
 app.get('/services', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'services.html'));
+  // Page "Nos services"
+  res.sendFile(path.resolve('views', 'services.html'));
 });
 
 app.get('/contact', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'contact.html'));
+  // Page "Contactez-nous"
+  res.sendFile(path.resolve('views', 'contact.html'));
 });
 
-// Serveur
+// Démarrage du serveur
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`🚀 Le serveur tourne sur http://localhost:${PORT} !`);
 });
